@@ -3,7 +3,7 @@
 " Maintainer:	Francisco Castro <fcr@adinet.com.uy>
 "		Original maintainer: Preben 'Peppe' Guldberg <peppe-vim@wielders.org>
 "		Original author: Mario Eusebio
-" Last Change:	3 Nov 2006
+" Last Change:	5 Jul 2007
 
 " For version 5.x: Clear all syntax items
 " For version 6.x: Quit when a syntax file was already loaded
@@ -15,14 +15,21 @@ endif
 
 function! s:CheckForFunctions()
   let l:i = 1
+  let l:prev = ''
   while l:i <= line('$')
-    let l:line = getline(l:i)
+    let l:line = l:prev . getline(l:i)
+    let l:i = l:i + 1
+    if match(l:line, "\\(^\\|[^\\\\]\\)\\\\$") >= 0
+      let l:prev = l:line[:-2]
+      continue
+    else
+      let l:prev = ''
+    endif
     if match(l:line, 'function') == 0
       let l:line = substitute(l:line, "function *\\(.*= *\\)\\?", "", "")
       let l:nfun = substitute(l:line, "\\([A-Za-z0-9_]\\+\\).*", "\\1", "")
       execute "syn keyword octaveFunction" l:nfun
     endif
-    let l:i = l:i + 1
   endwhile
 endfunction
 
